@@ -1,7 +1,25 @@
+using appShareWithLove.Models.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<ShareWithLoveDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CadenaSQL"));
+});
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(option =>
+    {
+        option.LoginPath = "/Login/Login"; //Log option
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(20); //tiem cookie
+        option.AccessDeniedPath = "/Home/Privacy"; // MaybeNullWhenAttribute happen if the user dont use
+    });
 
 var app = builder.Build();
 
