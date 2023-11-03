@@ -1,5 +1,8 @@
 ﻿using appShareWithLove.Models;
+using appShareWithLove.Models.Data;
+using appShareWithLove.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace appShareWithLove.Controllers
@@ -8,14 +11,20 @@ namespace appShareWithLove.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ShareWithLoveDbContext _context;
+
+        public HomeController(ILogger<HomeController> logger, ShareWithLoveDbContext context)
         {
+            _context = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+
+            var user5 = _context.Users;
+            var proyectContext = _context.Publications.Include(p => p.IdUserNavigation);
+            return View(new PubliComment(await _context.Publications.ToListAsync(), await _context.Comments.ToListAsync()));
         }
 
         public IActionResult Privacy()
